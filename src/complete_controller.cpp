@@ -337,7 +337,7 @@ namespace {
 
         // auto init_in_frame_euler=utils ::eulerFromQuaternion( init_pose_in_world.orientation.x);
          // Arm->goToPresetLocation(agv);
-        if (Arm->pickPart(part_type, init_pose_in_world , 0))
+        if (Arm->pickPart(part_type, init_pose_in_world , 1))
         {
             ROS_ERROR_STREAM("camera_frame"<<camera_frame);
             ROS_ERROR_STREAM("init_pose_world "<<init_pose_in_world);
@@ -405,6 +405,7 @@ namespace {
                             std::string agv)
     {
         auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
+        // auto target_pose_in_world = Arm::transform_to_world_frame(goal_in_tray_frame,agv);
         auto target_pose_in_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
                                     target_pose_in_world.orientation.y,
                                     target_pose_in_world.orientation.z,

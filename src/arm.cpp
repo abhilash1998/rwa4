@@ -59,7 +59,7 @@ Arm::Arm() :
     double wrist_3_joint{ 0 };
 
     //home position
-home1_.arm_preset = { 0, 0, -1.25, 1.74, -2.04, -1.57, 0 };
+    home1_.arm_preset = { 0, 0, -1.25, 1.74, -2.04, -1.57, 0 };
     home1_.name = "home1";
     home2_.arm_preset = { 0, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     home2_.name = "home2";
@@ -72,11 +72,11 @@ home1_.arm_preset = { 0, 0, -1.25, 1.74, -2.04, -1.57, 0 };
     bin1_.arm_preset = { 2.78, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     bin1_.name = "bin1";
     bin2_.arm_preset = { 2.02, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
-        bin2_.name = "bin2";
+    bin2_.name = "bin2";
     bin5_.arm_preset = { -3.45, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
-        bin5_.name = "bin5";
+    bin5_.name = "bin5";
     bin6_.arm_preset = { -4.37, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
-        bin6_.name = "bin6";
+    bin6_.name = "bin6";
     agv2_.arm_preset = { 0.83, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     agv2_.name = "agv2";
     agv3_.arm_preset = { -1.83, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };

@@ -119,10 +119,10 @@ void ConveyorBeltMonitor::expire_parts_callback(const ros::TimerEvent& evt)
         if (part.is_part_on_belt())
         {
             current_parts.push_back(part);
-            ROS_INFO_STREAM("Part at y = "
-                            << part.pick_pose_at_detection.position.y
-                            << " => "
-                            << part.get_estimated_pose().position.y);
+            // // ROS_INFO_STREAM("Part at y = "
+            //                 << part.pick_pose_at_detection.position.y
+            //                 << " => "
+            //                 << part.get_estimated_pose().position.y);
         }
     }
 

@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     robot_model_loader::RobotModelLoaderPtr rml(new robot_model_loader::RobotModelLoader(opt));
     planning_scene::PlanningScene ps(rml->getModel());
 
-    std::ifstream f("/home/sameep/ariac_ws/src/group3_rwa4/config/ariac.scene");
+    std::ifstream f("/home/sameep/ariac_ws/src/group3_rwa4/config/a.scene");
     if(f.fail()){
         ROS_INFO("HIT");
     }

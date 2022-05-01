@@ -271,8 +271,8 @@ Gantry::Gantry() :
         if (ss == 0){
         
         if (part_type.find("pump") != std::string::npos) {
-            // z_pos = 0.863;
-             z_pos = 0.92;
+            z_pos = 0.87;
+            //  z_pos = 0.92;
         }
         if (part_type.find("sensor") != std::string::npos) {
             z_pos = 0.833;
@@ -285,8 +285,7 @@ Gantry::Gantry() :
         }}
         else{
             if (part_type.find("pump") != std::string::npos) {
-            // z_pos = 0.888;
-            z_pos = 0.92;
+            z_pos = 0.88;
         }
         if (part_type.find("sensor") != std::string::npos) {
             z_pos = 0.853;
@@ -295,7 +294,7 @@ Gantry::Gantry() :
             z_pos = 0.833;
         }
         if (part_type.find("battery") != std::string::npos) {
-            z_pos = 0.853;
+            z_pos = 0.833;
         }
         }
 
@@ -357,7 +356,7 @@ Gantry::Gantry() :
             grasp_pose.position.z -= 0.001; // 0.001
             gantry_arm_group_.setPoseTarget(grasp_pose);
             gantry_arm_group_.move();
-            // ros::Duration(sleep(0.5));
+            ros::Duration(sleep(0.2));
         }
         
             gantry_arm_group_.setMaxVelocityScalingFactor(1.0);
@@ -550,10 +549,10 @@ bool Gantry::assembly_flip_placePart(geometry_msgs::Pose part_init_pose, geometr
             gantry_arm_group_.setPoseTarget(target_pose_in_world);
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
         // check a plan is found first then execute the action
-            // bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-            // if (success1)
-            gantry_arm_group_.move();
-                ros::Duration(2).sleep();
+            bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+            if (success1)
+                gantry_arm_group_.move();
+                // ros::Duration(2).sleep();
                 deactivateGripper();
             // gantry_arm_group_.move();
             // ros::Duration(2.0).sleep();

@@ -48,7 +48,7 @@ orders:
     announcement_condition_value: 0.0
     kitting:
       shipment_count: 1
-      agvs: [agv3]
+      agvs: [agv4]
       destinations: [as3]
       products:
         part_0:
@@ -68,8 +68,8 @@ orders:
     announcement_condition: agv_station_reached
     announcement_condition_value: agv4_at_as3
     assembly:
-      shipment_count: 2
-      stations: [as3, as1]
+      shipment_count: 1
+      stations: [as1]
       products:
         part_0:
           type: assembly_battery_green
@@ -107,13 +107,13 @@ belt_models:
         xyz: [0.0, 4.3, 0.92]
         rpy: [0, 0, 'pi/2']
 
-faulty_products:
-  - assembly_pump_blue_2
-  - assembly_pump_blue_3
-  - assembly_pump_blue_6
-  - assembly_pump_blue_7
+# faulty_products:
+  # - assembly_pump_blue_2
+#   - assembly_pump_blue_3
+#   - assembly_pump_blue_6
+#   - assembly_pump_blue_7
 
 # sensor_blackout:
-#   product_count: 1
+#   product_count: 3
 #   duration: 50
 
