@@ -123,7 +123,7 @@ Gantry::Gantry() :
         agv4_as4.gantry_preset = { -7.52, 4.50, 1.57, 0.0, -1.13, 1.88, -0.72, 1.55, 0.83 };
         agv4_as4.name = "agv4_as4";
 
-        as1_.gantry_preset = { -3.96, -2.88, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83 };
+        as1_.gantry_preset = { -3.5, -2.88, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83 };
         as1_.name = "as1";
         as2_.gantry_preset = { -8.85, -2.88, 1.57, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83};
         as2_.name = "as2";
@@ -284,7 +284,7 @@ Gantry::Gantry() :
         }}
         else{
             if (part_type.find("pump") != std::string::npos) {
-            z_pos = 0.883;
+            z_pos = 0.888;
         }
         if (part_type.find("sensor") != std::string::npos) {
             z_pos = 0.853;

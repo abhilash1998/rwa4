@@ -41,6 +41,7 @@ protected:
     // The parts currently detected by the logical cameras
     std::array<std::vector<std::string>, 4> current_detected_parts;
     std::array<std::vector<std::string>, 8> current_detected_parts_as1;
+    std::array<int, 4>  empty_bins;
 
     // True if a sensor blackout was detected right now, false otherwise
     bool in_sensor_blackout;
@@ -121,6 +122,7 @@ public:
     std::vector<int> get_camera_indices_of(const std::string& product_type) const;
     std::vector<int> get_as1_indices_of(const std::string& product_type) const;
     std::string get_logical_camera_contents() const;
+    std::array<int, 4>  get_empty_bins();
 
     // If there are any faulty parts, get the pick pose for one of them.
     // @param agv_id If this method returns true, then this value is
