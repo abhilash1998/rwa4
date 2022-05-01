@@ -69,13 +69,13 @@ home1_.arm_preset = { 0, 0, -1.25, 1.74, -2.04, -1.57, 0 };
     home4_.name = "home4";
     agv1_.arm_preset = { 3.83, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     agv1_.name = "agv1";
-    bin1_.arm_preset = { 2.78, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
+    bin1_.arm_preset = { 3.379, -M_PI, -0.75, 2.01, -2.76, -1.57, 0 };
     bin1_.name = "bin1";
-    bin2_.arm_preset = { 2.02, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
+    bin2_.arm_preset = { 2.565, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
         bin2_.name = "bin2";
-    bin5_.arm_preset = { -3.45, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
+    bin5_.arm_preset = { -2.565, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
         bin5_.name = "bin5";
-    bin6_.arm_preset = { -4.37, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
+    bin6_.arm_preset = { -3.379, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
         bin6_.name = "bin6";
     agv2_.arm_preset = { 0.83, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     agv2_.name = "agv2";
@@ -222,7 +222,7 @@ bool Arm::pickPart(std::string part_type, geometry_msgs::Pose part_init_pose, in
     // grasp pose: right above the part
     auto grasp_pose = part_init_pose;
     grasp_pose.orientation = arm_ee_link_pose.orientation;
-    grasp_pose.position.z = z_pos;
+    grasp_pose.position.z = z_pos - 0.01;
 
     waypoints.push_back(pregrasp_pose);
     waypoints.push_back(grasp_pose);
@@ -262,7 +262,7 @@ bool Arm::pickPart(std::string part_type, geometry_msgs::Pose part_init_pose, in
         grasp_pose.position.z -= 0.001;
         arm_group_.setPoseTarget(grasp_pose);
         arm_group_.move();
-        // ros::Duration(sleep(0.5));
+        ros::Duration(sleep(0.5));
     }
 
     arm_group_.setMaxVelocityScalingFactor(1.0);
@@ -290,16 +290,18 @@ bool Arm::conveyorPickPart(geometry_msgs::Pose part_pose){
     arm_ee_link_pose.orientation.w = flat_orientation.getW();
     geometry_msgs::Pose postgrasp_pose = part_pose;
     postgrasp_pose.orientation = arm_ee_link_pose.orientation;
-    postgrasp_pose.position.z = arm_ee_link_pose.position.z + 0.5;
+    postgrasp_pose.position.z = arm_ee_link_pose.position.z;
     std::vector<geometry_msgs::Pose> waypoints;
 
     auto pregrasp_pose = postgrasp_pose;
     pregrasp_pose.orientation = arm_ee_link_pose.orientation;
-    pregrasp_pose.position.z = part_pose.position.z + 0.08;
+    pregrasp_pose.position.z = part_pose.position.z + 0.06;
 
     auto grasp_pose = part_pose;
     grasp_pose.orientation = arm_ee_link_pose.orientation;
-    grasp_pose.position.z = part_pose.position.z + 0.002;
+    grasp_pose.position.x = part_pose.position.x - 0.01;
+    // grasp_pose.position.z = part_pose.position.z + 0.011;
+    grasp_pose.position.z = part_pose.position.z + 0.0115;
     
     waypoints.push_back(pregrasp_pose);
     waypoints.push_back(grasp_pose);
@@ -323,16 +325,22 @@ bool Arm::conveyorPickPart(geometry_msgs::Pose part_pose){
     while (!gripper_state_.attached)
     {
         grasp_pose.position.z -= 0.001;
+        grasp_pose.position.y -= 0.01;
         arm_group_.setPoseTarget(grasp_pose);
         arm_group_.move();
         ros::Duration(sleep(0.5));
     }
-    arm_group_.setMaxVelocityScalingFactor(1.0);
-    arm_group_.setMaxAccelerationScalingFactor(1.0);
+    ROS_INFO_STREAM("[Gripper] = object attached");
+    arm_group_.setMaxVelocityScalingFactor(0.8);
+    arm_group_.setMaxAccelerationScalingFactor(0.8);
     arm_group_.setPoseTarget(postgrasp_pose);
     arm_group_.move();
+    ros::Duration(1.0).sleep();
+    ROS_INFO_STREAM("go to home");
 
     goToPresetLocation("home1",1,part_pose.position.y);
+    ros::Duration(1.0).sleep();
+    goToPresetLocation("home2",1,part_pose.position.y);
     ros::Duration(1.0).sleep();
     ROS_INFO_STREAM("[Gripper] = object attached");
     // goToPresetLocation("home1");
@@ -408,19 +416,13 @@ bool Arm::placePart(geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part
     target_pose_in_world.orientation.y = q_rslt.y();
     target_pose_in_world.orientation.z = q_rslt.z();
     target_pose_in_world.orientation.w = q_rslt.w();
-    target_pose_in_world.position.z += 0.3;
+    target_pose_in_world.position.z += 0.15;
 
     arm_group_.setMaxVelocityScalingFactor(0.5);
     arm_group_.setPoseTarget(target_pose_in_world);
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-    // check a plan is found first then execute the action
-    bool success = (arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    if (success)
-        arm_group_.move();
-        deactivateGripper();
-    // arm_group_.move();
-    // ros::Duration(2.0).sleep();
-    // deactivateGripper();
+    arm_group_.move();
+    ros::Duration(2.0).sleep();
+    deactivateGripper();
     arm_group_.setMaxVelocityScalingFactor(1.0);
     goToPresetLocation(agv);
     
@@ -466,6 +468,9 @@ void Arm::goToPresetLocation(std::string location_name,int condition ,double y)
         }
         else if (location_name.compare("home4") == 0) {
             location = home3_;
+        }
+        else if (location_name.compare("home2") == 0) {
+            location = home2_;
         }
         joint_group_positions_.at(0) = y;
         joint_group_positions_.at(1) = location.arm_preset.at(1);

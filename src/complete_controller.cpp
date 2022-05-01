@@ -840,6 +840,8 @@ namespace {
             {
                 free_bin = "bin6";
             }
+            // free_bin="bin5";
+
             ROS_INFO_STREAM(free_bin);
             geometry_msgs::Pose goal_in_tray;
             goal_in_tray.position.x= 0.1;
@@ -861,6 +863,7 @@ namespace {
                     pickup_pose.position.y = part_pose.position.y - 0.28;
                     pickup_pose.position.z = part_pose.position.z;
                     if (arm->conveyorPickPart(pickup_pose)) {
+                        ros::Duration(0.5).sleep();
                         // arm->placeConveyorPart("bin1");
                         arm->placePart(pickup_pose,goal_in_tray,free_bin,flip_);
                         return true;
