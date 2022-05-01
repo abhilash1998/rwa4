@@ -222,7 +222,7 @@ bool Arm::pickPart(std::string part_type, geometry_msgs::Pose part_init_pose, in
     // grasp pose: right above the part
     auto grasp_pose = part_init_pose;
     grasp_pose.orientation = arm_ee_link_pose.orientation;
-    grasp_pose.position.z = z_pos - 0.01;
+    grasp_pose.position.z = z_pos;
 
     waypoints.push_back(pregrasp_pose);
     waypoints.push_back(grasp_pose);
@@ -262,7 +262,7 @@ bool Arm::pickPart(std::string part_type, geometry_msgs::Pose part_init_pose, in
         grasp_pose.position.z -= 0.001;
         arm_group_.setPoseTarget(grasp_pose);
         arm_group_.move();
-        ros::Duration(sleep(0.5));
+        // ros::Duration(sleep(0.5));
     }
 
     arm_group_.setMaxVelocityScalingFactor(1.0);
@@ -408,13 +408,19 @@ bool Arm::placePart(geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part
     target_pose_in_world.orientation.y = q_rslt.y();
     target_pose_in_world.orientation.z = q_rslt.z();
     target_pose_in_world.orientation.w = q_rslt.w();
-    target_pose_in_world.position.z += 0.15;
+    target_pose_in_world.position.z += 0.3;
 
     arm_group_.setMaxVelocityScalingFactor(0.5);
     arm_group_.setPoseTarget(target_pose_in_world);
-    arm_group_.move();
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    // check a plan is found first then execute the action
+    bool success = (arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    if (success)
+        arm_group_.move();
+        deactivateGripper();
+    // arm_group_.move();
     // ros::Duration(2.0).sleep();
-    deactivateGripper();
+    // deactivateGripper();
     arm_group_.setMaxVelocityScalingFactor(1.0);
     goToPresetLocation(agv);
     

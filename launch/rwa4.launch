@@ -1,4 +1,5 @@
 <launch>
+  <node name = "obstacle_controller" pkg= "group3_rwa4" type = "obstacle_controller" />
   <node name="blackout_controller"
         pkg="group3_rwa4"
         type="blackout_controller"
