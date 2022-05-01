@@ -48,7 +48,7 @@ orders:
     announcement_condition_value: 0.0
     kitting:
       shipment_count: 1
-      agvs: [agv4]
+      agvs: [agv3]
       destinations: [as3]
       products:
         part_0:

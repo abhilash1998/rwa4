@@ -84,12 +84,39 @@ namespace {
     }
 
     void cater_pose_orient_parts(std::string part_type, Arm*const Arm,
-                          std::string camera_frame, 
+                          int counter,
                           geometry_msgs::Pose goal_in_tray, 
                           std::string agv)
     {
         geometry_msgs::Pose target_pose_in_world;
         geometry_msgs::Pose current_pose_in_world;
+        std::string camera_frame;
+        int iter;
+        if (agv=="agv1"){
+            iter=1;
+        }
+        else if(agv=="agv2"){
+            iter=4;
+        }
+        else if(agv=="agv3") {
+            iter=3;
+        }
+        else{
+            iter=2;
+        }
+        if(agv=="as1"){
+            iter=5;
+        }
+        else if(agv=="as2"){
+            iter=6;
+        }
+        else if(agv=="as3"){
+            iter=7;
+        }
+        else if(agv=="as4"){
+            iter=8;
+        }
+        camera_frame = build_part_frame(part_type, iter, counter);
 
         target_pose_in_world = utils::transformToWorldFrame(goal_in_tray, agv);
         bool flip_=true;
@@ -100,18 +127,45 @@ namespace {
             {
                 Arm->placePart(current_pose_in_world, target_pose_in_world, agv,flip_);
             }
-            cater_pose_orient_parts( part_type,Arm,camera_frame,goal_in_tray,agv);                        
+            cater_pose_orient_parts( part_type,Arm,counter,goal_in_tray,agv);                        
         }
     }
 
 
     void cater_pose_orient_parts(std::string part_type, Gantry*const Arm,
-                                std::string camera_frame, 
+                                int counter, 
                                 geometry_msgs::Pose goal_in_tray, 
                                 std::string agv)
     {
         geometry_msgs::Pose target_pose_in_world;
         geometry_msgs::Pose current_pose_in_world;
+        std::string camera_frame;
+        int iter;
+        if (agv=="agv1"){
+            iter=1;
+        }
+        else if(agv=="agv2"){
+            iter=4;
+        }
+        else if(agv=="agv3") {
+            iter=3;
+        }
+        else{
+            iter=2;
+        }
+        if(agv=="as1"){
+            iter=5;
+        }
+        else if(agv=="as2"){
+            iter=6;
+        }
+        else if(agv=="as3"){
+            iter=7;
+        }
+        else if(agv=="as4"){
+            iter=8;
+        }
+        camera_frame = build_part_frame(part_type, iter, counter);
         target_pose_in_world = utils::transformToWorldFrame(goal_in_tray,agv);
         bool flip_=true;
         current_pose_in_world = utils::transformToWorldFrame(camera_frame);
@@ -121,7 +175,7 @@ namespace {
             {
                 Arm->placePart(current_pose_in_world,target_pose_in_world,part_type,agv,flip_);
             }
-            cater_pose_orient_parts( part_type,Arm,camera_frame,goal_in_tray,agv);
+            cater_pose_orient_parts( part_type,Arm,counter,goal_in_tray,agv);
         }
     }
 
@@ -212,15 +266,6 @@ namespace {
     }
 
 
-
-
-
-
-
-
-
-
-
     void cater_flip_parts(std::string part_type, Gantry*const Arm,
                           std::string camera_frame, 
                           geometry_msgs::Pose goal_in_tray, 
@@ -236,17 +281,17 @@ namespace {
                                                                     target_pose_in_world.orientation.w);
         // float pi=0;
         float pi=22/7;
-        target_pose_in_world_euler[0]=target_pose_in_world_euler[0]-pi/2;
+        target_pose_in_world_euler[0]=target_pose_in_world_euler[0] + pi/2;
         auto target_pose_in_world_quaternion=utils::quaternionFromEuler(target_pose_in_world_euler[0],target_pose_in_world_euler[1],target_pose_in_world_euler[2]);
         // goal_in_tray.orientation=goal_in_tray_quaternion;
         target_pose_in_world.orientation.x= target_pose_in_world_quaternion[0];
         target_pose_in_world.orientation.y= target_pose_in_world_quaternion[1];
         target_pose_in_world.orientation.z= target_pose_in_world_quaternion[2];
         target_pose_in_world.orientation.w= target_pose_in_world_quaternion[3];
-
+        target_pose_in_world.position.z += 0.1;
         // auto init_in_frame_euler=utils ::eulerFromQuaternion( init_pose_in_world.orientation.x);
          // Arm->goToPresetLocation(agv);
-        if (Arm->pickPart(part_type, init_pose_in_world , 1))
+        if (Arm->pickPart(part_type, init_pose_in_world , 0))
         {
             // (geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part_goal_pose, std::string agv,bool flip_);
             Arm->placePart(init_pose_in_world,target_pose_in_world,part_type,agv,flip_);
@@ -270,14 +315,14 @@ namespace {
                                                                     target_pose_in_world.orientation.w);
         // float pi=0;
         float pi=22/7;
-        target_pose_in_world_euler[0]=target_pose_in_world_euler[0]-pi/2;
+        target_pose_in_world_euler[0]=target_pose_in_world_euler[0] + pi/2;
         auto target_pose_in_world_quaternion=utils::quaternionFromEuler(target_pose_in_world_euler[0],target_pose_in_world_euler[1],target_pose_in_world_euler[2]);
         // goal_in_tray.orientation=goal_in_tray_quaternion;
         target_pose_in_world.orientation.x= target_pose_in_world_quaternion[0];
         target_pose_in_world.orientation.y= target_pose_in_world_quaternion[1];
         target_pose_in_world.orientation.z= target_pose_in_world_quaternion[2];
         target_pose_in_world.orientation.w= target_pose_in_world_quaternion[3];
-
+        target_pose_in_world.position.z += 0.15;
         // auto init_in_frame_euler=utils ::eulerFromQuaternion( init_pose_in_world.orientation.x);
         // Arm->goToPresetLocation(agv);
         if (Arm->pickPart(part_type, init_pose_in_world , 1))
@@ -479,7 +524,7 @@ namespace {
                         cater_faulty_parts(agility, arm, order_id, products);
                         if (!is_faulty)
                         {
-                            cater_pose_orient_parts(product.type, arm, part_frame, product.pose, ks.agv_id);
+                            cater_pose_orient_parts(product.type, arm, counter, product.pose, ks.agv_id);
                         }
                         cater_higher_priority_order_if_necessary(agv_map, agility, arm, garm, order_priority);
                     }
@@ -675,13 +720,15 @@ namespace {
                     bool flip_ =check_for_flip_part(product.type,part_frame,product.pose,as.station_id);
 
                     // Move the part from where it is to the AGV bed
-                     if (flip_){
-                            arm->goToPresetLocation("home2");
-                             ROS_WARN_STREAM("flip part");
-                             cater_flip_parts(product.type,garm,part_frame,product.pose, as.station_id);
-                            //  garm->moveBaseTo(world_pose.position.x, world_pose.position.y);
-                         }
-                         else{
+                    if (flip_)
+                    {
+                        arm->goToPresetLocation("home2");
+                        ROS_WARN_STREAM("flip part");
+                        cater_flip_parts(product.type,garm,part_frame,product.pose, as.station_id);
+                        //  garm->moveBaseTo(world_pose.position.x, world_pose.position.y);
+                    }
+                    else
+                    {
                         arm->goToPresetLocation("home2");
                         ROS_WARN_STREAM("No flip");
                         ROS_INFO_STREAM("Moving part '" << product.type << "' to '" <<  as.station_id << "' (" << part_frame << ")");
@@ -706,10 +753,7 @@ namespace {
                     // Give an opportunity for higher priority orders
                     cater_higher_priority_order_if_necessary(agv_map, agility, arm, garm, order_priority);
 
-                    cater_pose_orient_parts(product.type,  garm,
-                           part_frame , 
-                          product.pose, 
-                          as.station_id);
+                    cater_pose_orient_parts(product.type,  garm, counter ,product.pose, as.station_id);
                     break;
                 }
 
@@ -823,8 +867,6 @@ void pick_part_conveyor(Arm * arm, ros::ServiceClient * Conveyor_client ){
 }
 
 
-
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "complete_controller");
@@ -922,7 +964,7 @@ int main(int argc, char **argv)
     nist_gear::Order current_order;
     ros::Duration rate(0.1);
         // ros::Duration(10).sleep();
-    pick_part_conveyor( &arm,  &Conveyor_client );
+    // pick_part_conveyor( &arm,  &Conveyor_client );
     while (ros::ok())
     {
         current_order_priority = agility.consume_pending_order(current_order);
