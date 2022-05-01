@@ -400,17 +400,41 @@ namespace {
 
 
     bool check_for_flip_part(std::string part_type,
-                            std::string camera_frame,
+                            std::string camera_frame,Arm* const arm,
                             geometry_msgs::Pose goal_in_tray_frame, 
                             std::string agv)
     {
-        auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
+        auto target_pose_in_world = arm->transform_to_world_frame(goal_in_tray_frame,agv);
         // auto target_pose_in_world = Arm::transform_to_world_frame(goal_in_tray_frame,agv);
         auto target_pose_in_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
                                     target_pose_in_world.orientation.y,
                                     target_pose_in_world.orientation.z,
                                     target_pose_in_world.orientation.w);
-        auto init_pose_in_world = utils::transformToWorldFrame(camera_frame);
+        auto init_pose_in_world = arm->transform_to_world_frame(camera_frame);
+        auto init_pose_in_world_euler = utils::eulerFromQuaternion( init_pose_in_world.orientation.x,init_pose_in_world.orientation.y,init_pose_in_world.orientation.z,init_pose_in_world.orientation.w);
+
+        if((abs(init_pose_in_world_euler[0] - target_pose_in_euler[0])<3.16) && (abs(init_pose_in_world_euler[0] - target_pose_in_euler[0])>3.13))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    
+    }
+        bool check_for_flip_part(std::string part_type,
+                            std::string camera_frame,Gantry* const arm,
+                            geometry_msgs::Pose goal_in_tray_frame, 
+                            std::string agv)
+    {
+        // auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
+        auto target_pose_in_world = arm->transform_to_world_frame(goal_in_tray_frame,agv);
+        auto target_pose_in_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
+                                    target_pose_in_world.orientation.y,
+                                    target_pose_in_world.orientation.z,
+                                    target_pose_in_world.orientation.w);
+        auto init_pose_in_world = arm->transform_to_world_frame(camera_frame);
         auto init_pose_in_world_euler = utils::eulerFromQuaternion( init_pose_in_world.orientation.x,init_pose_in_world.orientation.y,init_pose_in_world.orientation.z,init_pose_in_world.orientation.w);
 
         if((abs(init_pose_in_world_euler[0] - target_pose_in_euler[0])<3.16) && (abs(init_pose_in_world_euler[0] - target_pose_in_euler[0])>3.13))
@@ -522,7 +546,7 @@ namespace {
                     {
                         continue;
                     }
-                    bool flip_ =check_for_flip_part(product.type,part_frame,product.pose,ks.agv_id);
+                    bool flip_ =check_for_flip_part(product.type,part_frame,arm,product.pose,ks.agv_id);
                 
                     // Move the part from where it is to the AGV bed
                     //check TF for Gantry or Arm
@@ -781,7 +805,7 @@ namespace {
                     {
                         continue;
                     }
-                    bool flip_ =check_for_flip_part(product.type,part_frame,product.pose,as.station_id);
+                    bool flip_ =check_for_flip_part(product.type,part_frame,garm,product.pose,as.station_id);
 
                     // Move the part from where it is to the AGV bed
                     if (flip_)

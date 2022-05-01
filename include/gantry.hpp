@@ -72,6 +72,7 @@
         nist_gear::VacuumGripperState getGripperState();
 	
 	geometry_msgs::Pose transform_to_world_frame(const geometry_msgs::Pose& target, const std::string& agv_id);
+    geometry_msgs::Pose transform_to_world_frame(const std::string& part_in_camera_frame);
         
 
         // Send command message to robot controller

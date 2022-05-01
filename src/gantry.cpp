@@ -753,6 +753,10 @@ geometry_msgs::Pose Gantry::transform_to_world_frame(const geometry_msgs::Pose& 
     return utils::transformToWorldFrame(target, agv_id, tf_buffer);
 }
     
+geometry_msgs::Pose Gantry::transform_to_world_frame(const std::string& part_in_camera_frame)
+{    
+    return utils::transformToWorldFrame(part_in_camera_frame, tf_buffer);
+}
 
     /////////////////////////////////////////////////////
     void Gantry::gantry_joint_states_callback_(const sensor_msgs::JointState::ConstPtr& joint_state_msg)
