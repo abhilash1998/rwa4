@@ -369,9 +369,9 @@ namespace {
                           std::string agv)
     {
         bool flip_=true;
-        auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray,agv);
+        auto target_pose_in_world = Arm->transform_to_world_frame(goal_in_tray,agv);
         // ROS_INFO_WARN()
-        auto init_pose_in_world = utils::transformToWorldFrame(camera_frame);
+        auto init_pose_in_world = Arm->transform_to_world_frame(camera_frame);
         auto target_pose_in_world_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
                                                                     target_pose_in_world.orientation.y,
                                                                     target_pose_in_world.orientation.z,
@@ -388,7 +388,7 @@ namespace {
         target_pose_in_world.position.z += 0.15;
         // auto init_in_frame_euler=utils ::eulerFromQuaternion( init_pose_in_world.orientation.x);
         // Arm->goToPresetLocation(agv);
-        if (Arm->pickPart(part_type, init_pose_in_world , 1))
+        if (Arm->pickPart(part_type, init_pose_in_world , 0))
         {
             // (geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part_goal_pose, std::string agv,bool flip_);
             Arm->placePart(init_pose_in_world,target_pose_in_world,agv,flip_);
@@ -404,7 +404,7 @@ namespace {
                             geometry_msgs::Pose goal_in_tray_frame, 
                             std::string agv)
     {
-        auto target_pose_in_world = arm->transform_to_world_frame(goal_in_tray_frame,agv);
+        auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
         // auto target_pose_in_world = Arm::transform_to_world_frame(goal_in_tray_frame,agv);
         auto target_pose_in_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
                                     target_pose_in_world.orientation.y,
@@ -429,7 +429,7 @@ namespace {
                             std::string agv)
     {
         // auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
-        auto target_pose_in_world = arm->transform_to_world_frame(goal_in_tray_frame,agv);
+        auto target_pose_in_world = utils::transformToWorldFrame(goal_in_tray_frame,agv);
         auto target_pose_in_euler= utils::eulerFromQuaternion(target_pose_in_world.orientation.x,
                                     target_pose_in_world.orientation.y,
                                     target_pose_in_world.orientation.z,
@@ -641,6 +641,7 @@ namespace {
                     } while (agility->needs_fault_verification(ks.agv_id));
 
                     cater_faulty_parts(agility, arm, order_id, products);
+                    cater_pose_orient_parts(product.type, arm, counter, product.pose, ks.agv_id);
                     // cater_pose_orient_parts(product.type,  arm,
                     //        part_frame, 
                     //       product.pose, 
@@ -670,6 +671,7 @@ namespace {
                         ks.shipment_type
                     );
                     ROS_INFO_STREAM("Submitted AGV with ID " << ks.agv_id);
+                    ros::Duration(2.0).sleep();
                 }
                 else
                 {
@@ -727,7 +729,7 @@ namespace {
                                 << "', "
                                 << products.size()
                                 << " remaining afterwards");
-
+                ros::Duration(2.0).sleep();
                 // Get the bins in which this part appears
                 const std::vector<int> bin_indices = agility->get_as1_indices_of(product.type);
                 if (bin_indices.empty())
@@ -751,18 +753,22 @@ namespace {
                     if( as.station_id.compare("as1")==0 && ( *iter == 9 or *iter == 10 ) )
                     {
                         item_ready = true;
+                        ROS_ERROR_STREAM("HIT AS1"); 
                     }
                     else if( as.station_id.compare("as2")==0 && ( *iter == 11 or *iter == 12 ) )
                     {
                         item_ready = true;
+                        ROS_ERROR_STREAM("HIT AS2");
                     }
                     else if( as.station_id.compare("as3")==0 && ( *iter == 13 or *iter == 14 ) )
                     {
                         item_ready = true;
+                        ROS_ERROR_STREAM("HIT AS3");
                     }
                     else if( as.station_id.compare("as4")==0 && ( *iter == 15 or *iter == 16 ) )
                     {
                         item_ready = true;
+                        ROS_ERROR_STREAM("HIT AS4");
                     }
                     
                     if(!item_ready)
@@ -777,46 +783,26 @@ namespace {
                         part_frame = build_part_frame(product.type, *iter, counter);
                         if (does_frame_exist(part_frame, 0.5))
                         {
-                            if (hit_list.empty())
-                            {   
-                                // ROS_INFO_STREAM("Hit List Updated");
-                                hit_list.emplace_back(product.type + std::to_string(counter));
-                            }
-                            else
-                            {
-                                for (auto s : hit_list)
-                                {
-                                    if(s.compare(product.type + std::to_string(counter)) == 0)
-                                    {
-                                        hit = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (hit) {continue;}
-                            else 
-                            {
-                                hit_list.emplace_back(product.type + std::to_string(counter));
-                                break;
-                            }
+                            break;
                         }
                     }
                     if (!does_frame_exist(part_frame, 0.5))
                     {
                         continue;
                     }
-                    bool flip_ =check_for_flip_part(product.type,part_frame,garm,product.pose,as.station_id);
+                    ROS_INFO_STREAM(part_frame);
+                    // bool flip_ =check_for_flip_part(product.type,part_frame,garm,product.pose,as.station_id);
 
                     // Move the part from where it is to the AGV bed
-                    if (flip_)
-                    {
-                        arm->goToPresetLocation("home2");
-                        ROS_WARN_STREAM("flip part");
-                        cater_flip_parts_assembly(product.type,garm,part_frame,product.pose, as.station_id);
-                        ros::Duration(2).sleep();
-                        cater_flip_parts_assembly(product.type,garm,part_frame,product.pose, as.station_id);
-                        //  garm->moveBaseTo(world_pose.position.x, world_pose.position.y);
-                    }
+                    // if (flip_)
+                    // {
+                    //     arm->goToPresetLocation("home2");
+                    //     ROS_WARN_STREAM("flip part");
+                    //     cater_flip_parts_assembly(product.type,garm,part_frame,product.pose, as.station_id);
+                    //     ros::Duration(2).sleep();
+                    //     cater_flip_parts_assembly(product.type,garm,part_frame,product.pose, as.station_id);
+                    //     //  garm->moveBaseTo(world_pose.position.x, world_pose.position.y);
+                    // }
                     // else
                     // {
                         // arm->goToPresetLocation("home2");

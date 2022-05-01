@@ -52,7 +52,7 @@ cd ~/ariac_ws/src
 ```
 2. Copy the repository in src folder of catkin workspace
 ```
-git clone --recursive https://github.com/Sameep2808/group_3_rwa1.git
+git clone --recursive https://github.com/Sameep2808/group3_rwa4.git
 cd ..
 catkin build
 ```
@@ -65,36 +65,10 @@ source ~/ariac_ws/devel/setup.bash
 
 2. To run the entire package 
 ```
-roslaunch group_3_rwa1 main.launch
+roslaunch group3_rwa4 ariac.launch
+roslaunch group3_rwa4 rwa4.launch
 ```
 
-## To run just the sensor subscribing node
-1. Launch the sample Environment
-```
-roslaunch nist_gear sample_environment.launch
-```
-2. Run the sensor node
-```
-rosrun group_3_rwa1 sensors_controller
-```
-3. Start the Competition
-```
-rosservice call /ariac/start_competition
-```
-
-## To run just the AGV node
-1. Launch the sample Environment
-```
-roslaunch nist_gear sample_environment.launch
-```
-2. Run the sensor node
-```
-rosrun group_3_rwa1 agvs_controller
-```
-3. Start the Competition
-```
-rosservice call /ariac/start_competition
-```
 
 
 

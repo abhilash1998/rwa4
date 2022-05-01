@@ -52,7 +52,7 @@ orders:
       destinations: [as3]
       products:
         part_0:
-          type: assembly_pump_blue
+          type: assembly_battery_green
           pose:
             xyz: [0.1, 0.1, 0]
             rpy: [0, 0, 0]
@@ -113,7 +113,7 @@ faulty_products:
   - assembly_pump_blue_6
   - assembly_pump_blue_7
 
-# sensor_blackout:
-#   product_count: 1
-#   duration: 50
+sensor_blackout:
+  product_count: 3
+  duration: 50
 

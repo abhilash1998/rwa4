@@ -123,11 +123,11 @@ Gantry::Gantry() :
         agv4_as4.gantry_preset = { -7.52, 4.50, 1.57, 0.0, -1.13, 1.88, -0.72, 1.55, 0.83 };
         agv4_as4.name = "agv4_as4";
 
-        as1_.gantry_preset = { -3.96, -2.88, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83 };
+        as1_.gantry_preset = { -3.95, -2.88, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83 };
         as1_.name = "as1";
         as2_.gantry_preset = { -8.85, -2.88, 1.57, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83};
         as2_.name = "as2";
-        as3_.gantry_preset = { -3.96, 2.97, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83};
+        as3_.gantry_preset = { -3.95, 2.97, 1.63, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83};
         as3_.name = "as3";
         as4_.gantry_preset = { -8.85, 3.24, 1.57, -1.38, -2.14, 1.88, -0.38, 0.13, 0.83};
         as4_.name = "as4";
@@ -281,7 +281,7 @@ Gantry::Gantry() :
             z_pos = 0.813;
         }
         if (part_type.find("battery") != std::string::npos) {
-            z_pos = 0.853;
+            z_pos = 0.803;
         }}
         else{
             if (part_type.find("pump") != std::string::npos) {
@@ -294,7 +294,7 @@ Gantry::Gantry() :
             z_pos = 0.833;
         }
         if (part_type.find("battery") != std::string::npos) {
-            z_pos = 0.833;
+            z_pos = 0.82;
         }
         }
 
@@ -365,7 +365,7 @@ Gantry::Gantry() :
             // ros::Duration(sleep(1.0));
             gantry_arm_group_.setPoseTarget(postgrasp_pose3);
             gantry_arm_group_.move();
-            ros::Duration(sleep(2.0));
+            ros::Duration(sleep(1.0));
 
             // gantryArmPreset();
 
@@ -450,12 +450,13 @@ bool Gantry::assembly_flip_placePart(geometry_msgs::Pose part_init_pose, geometr
             gantry_arm_group_.setMaxVelocityScalingFactor(0.3);
             gantry_arm_group_.setPoseTarget(target_pose_in_world);
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-        // check a plan is found first then execute the action
-            // bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-            // if (success1)
+        // // check a plan is found first then execute the action
+            bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+            if (success1)
+            {
                 gantry_arm_group_.move();
-                ros::Duration(2).sleep();
-                deactivateGripper();
+                // ros::Duration(2).sleep();
+                deactivateGripper();}
             // gantry_arm_group_.move();
             // ros::Duration(2.0).sleep();
             

@@ -47,7 +47,7 @@ Visualization Manager:
       MoveIt_Allow_External_Program: false
       MoveIt_Allow_Replanning: true
       MoveIt_Allow_Sensor_Positioning: false
-      MoveIt_Planning_Attempts: 50
+      MoveIt_Planning_Attempts: 10
       MoveIt_Planning_Time: 200
       MoveIt_Use_Cartesian_Path: false
       MoveIt_Use_Constraint_Aware_IK: true
@@ -453,25 +453,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 8.686824798583984
+      Distance: 12.898402214050293
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -7.771154880523682
-        Y: -0.019484639167785645
+        X: -5.29654598236084
+        Y: -2.048396348953247
         Z: -2.5331917186122155e-7
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.074796199798584
+      Pitch: 0.7947961688041687
       Target Frame: world
       Value: XYOrbit (rviz)
-      Yaw: 2.8667709827423096
+      Yaw: 5.171804428100586
     Saved: ~
 Window Geometry:
   Displays:
@@ -492,4 +492,4 @@ Window Geometry:
     collapsed: false
   Width: 1853
   X: 67
-  Y: 80
+  Y: 50

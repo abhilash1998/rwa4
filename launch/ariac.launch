@@ -36,15 +36,15 @@
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
           $(arg visualize_sensors_args)
-          -f $(find group3_rwa4)/config/trial_config/rwa4t.yaml
+          -f $(find group3_rwa4)/config/trial_config/rwa4.yaml
           $(find group3_rwa4)/config/sensor_config/motion_control_sensor.yaml
           " required="true" output="screen" />
 
-  <group ns='ariac/gantry'>
+  <!-- <group ns='ariac/gantry'>
     <include file="$(find gantry_moveit_config)/launch/moveit_rviz.launch">
       <arg name="rviz_config" value="$(find group3_rwa4)/rviz/gantry_moveit.rviz" />
     </include>
-  </group> 
+  </group>  -->
   
 
   <!-- <group ns='ariac/kitting'>
