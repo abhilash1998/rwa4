@@ -1,0 +1,23 @@
+<launch>
+  <node name="blackout_controller"
+        pkg="group3_rwa4"
+        type="blackout_controller"
+        required="true"
+        ns="group_3"
+        output="screen"
+  />
+  <node name="arm_controller"
+        pkg="group3_rwa4"
+        type="arm_controller"
+        required="true"
+        ns="group_3"
+        output="screen"
+  />
+  <node name="conveyor_belt_monitor_controller"
+        pkg="group3_rwa4"
+        type="conveyor_belt_monitor_controller"
+        required="true"
+        ns="group_3"
+        output="screen"
+  />
+</launch>

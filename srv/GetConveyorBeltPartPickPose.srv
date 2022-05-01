@@ -1,0 +1,14 @@
+# Given the amount of time desired to get to the objective pose, get the pose
+# of a conveyor belt part at this time
+
+# The time buffer, from right now
+float32 dt
+
+---
+
+# True if there were any parts available
+bool part_available
+
+# Is part_available is true, then this is populated with the pick point of a
+# part at (ros.Time.now() + dt)
+geometry_msgs/Pose pick_pose

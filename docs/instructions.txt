@@ -1,0 +1,32 @@
+## Steps to Build package
+1. Navigate to ARIAC Workspace
+```
+cd ~/ariac_ws/src 
+```
+2. Copy the repository in src folder of catkin workspace
+```
+git clone --recursive https://github.com/rnvandemark/group3_rwa4.git
+cd ..
+catkin build
+```
+## Steps to Run package
+1. Make sure you have sourced setup file
+```
+
+source ~/ariac_ws/devel/setup.bash
+```
+
+2. Launch the ARIAC environment
+```
+roslaunch group3_rwa4 ariac.launch
+```
+
+3. Launch our custom nodes
+```
+roslaunch group3_rwa4 main.launch
+```
+
+4. Run the spawn script
+```
+rosrun group3_rwa4 part_spawner.sh
+```

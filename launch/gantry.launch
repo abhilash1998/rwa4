@@ -1,0 +1,17 @@
+<launch>
+  <node name="blackout_controller"
+        pkg="group3_rwa4"
+        type="blackout_controller"
+        required="true"
+        ns="group_3"
+        output="screen"
+  />
+  <node name = "obstacle_controller" pkg= "group3_rwa4" type = "obstacle_controller" />
+  <node name="gantry_controller"
+        pkg="group3_rwa4"
+        type="gantry_controller"
+        required="true"
+        ns="group_3"
+        output="screen"
+  />
+</launch>

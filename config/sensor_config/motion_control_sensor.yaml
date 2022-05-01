@@ -1,0 +1,107 @@
+sensors:
+  logical_camera_1:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, 3.976062, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_2:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, -3.998248, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_3:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, -1.939678, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_4:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, 1.929279, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+
+  logical_camera_5:
+    type: logical_camera
+    pose:
+      xyz: [-7.262095, 2.963994, 2.285697]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_6:
+    type: logical_camera
+    pose:
+      xyz: [-12.26217, 2.963994, 2.285697]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+ 
+  logical_camera_7:
+    type: logical_camera
+    pose:
+      xyz: [-7.262095, -2.963994, 2.285697]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_8:
+    type: logical_camera
+    pose:
+      xyz: [-12.26217, -2.963994, 2.285697]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_9:       #as1_1
+    type: logical_camera
+    pose:
+      xyz: [-5.4, 4.702724, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_10:  #as1_2
+    type: logical_camera
+    pose:
+      xyz: [-5.4, 1.361367, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_13:  #as3_1
+    type: logical_camera
+    pose:
+      xyz: [-5.4, -1.325227, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_14: #logical_camera_as3_2
+    type: logical_camera
+    pose:
+      xyz: [-5.4, -4.698129, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_11: #logical_camera_as2_1
+    type: logical_camera
+    pose:
+      xyz: [-10.4, 4.702724, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_12: #logical_camera_as2_2
+    type: logical_camera
+    pose:
+      xyz: [-10.4, 1.361367, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_15: #logical_camera_as4_1
+    type: logical_camera
+    pose:
+      xyz: [-10.4, -1.325227, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_16: #logical_camera_as4_2
+    type: logical_camera
+    pose:
+      xyz: [-10.4, -4.698129, 1.50]
+      rpy: [3.141593, 1.570792, 0.000000]
+  laser_profiler_0:
+    type: laser_profiler
+    pose:
+      xyz: [-0.57, 4.16, 1.45]
+      rpy: [1.570792, 1.570792, 0]
+
+robot_camera:
+  enable: true
+
