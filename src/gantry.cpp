@@ -271,7 +271,8 @@ Gantry::Gantry() :
         if (ss == 0){
         
         if (part_type.find("pump") != std::string::npos) {
-            z_pos = 0.863;
+            // z_pos = 0.863;
+             z_pos = 0.92;
         }
         if (part_type.find("sensor") != std::string::npos) {
             z_pos = 0.833;
@@ -280,11 +281,12 @@ Gantry::Gantry() :
             z_pos = 0.813;
         }
         if (part_type.find("battery") != std::string::npos) {
-            z_pos = 0.793;
+            z_pos = 0.853;
         }}
         else{
             if (part_type.find("pump") != std::string::npos) {
-            z_pos = 0.883;
+            // z_pos = 0.888;
+            z_pos = 0.92;
         }
         if (part_type.find("sensor") != std::string::npos) {
             z_pos = 0.853;
@@ -293,7 +295,7 @@ Gantry::Gantry() :
             z_pos = 0.833;
         }
         if (part_type.find("battery") != std::string::npos) {
-            z_pos = 0.823;
+            z_pos = 0.853;
         }
         }
 
@@ -342,7 +344,7 @@ Gantry::Gantry() :
         // plan the cartesian motion and execute it
         moveit_msgs::RobotTrajectory trajectory;
         const double jump_threshold = 0.0;
-        const double eef_step = 0.01;
+        const double eef_step = 0.005;
         double fraction = gantry_arm_group_.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         plan.trajectory_ = trajectory;
@@ -364,13 +366,113 @@ Gantry::Gantry() :
             // ros::Duration(sleep(1.0));
             gantry_arm_group_.setPoseTarget(postgrasp_pose3);
             gantry_arm_group_.move();
-            ros::Duration(sleep(1.0));
+            ros::Duration(sleep(2.0));
 
             // gantryArmPreset();
 
             return true;
         
     }
+
+bool Gantry::assembly_flip_placePart(geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part_pose_in_frame,std::string part_type, std::string agv,bool flip_)
+
+    {
+            // gantryArmPreset();       
+            // goToPresetLocation(agv);
+            geometry_msgs::Pose target_pose_in_world;
+            if(flip_){
+                target_pose_in_world =  part_pose_in_frame;
+            }
+            else{
+                target_pose_in_world = utils::transformToWorldFrame(
+                part_pose_in_frame,
+                agv);
+            }
+            // get the target pose of the part in the world frame
+            
+            // auto target_pose_in_world = utils::transformToWorldFrame(
+            //     part_pose_in_frame,
+            //     agv);
+
+            geometry_msgs::Pose gantry_arm_ee_link = gantry_arm_group_.getCurrentPose().pose;
+            auto flat_orientation = utils::quaternionFromEuler(0, 1.57, 0);
+            gantry_arm_ee_link = gantry_arm_group_.getCurrentPose().pose;
+            gantry_arm_ee_link.orientation.x = flat_orientation.getX();
+            gantry_arm_ee_link.orientation.y = flat_orientation.getY();
+            gantry_arm_ee_link.orientation.z = flat_orientation.getZ();
+            gantry_arm_ee_link.orientation.w = flat_orientation.getW();
+
+            // store the current orientation of the end effector now
+            // so we can reuse it later
+            tf2::Quaternion q_current(
+                gantry_arm_ee_link.orientation.x,
+                gantry_arm_ee_link.orientation.y,
+                gantry_arm_ee_link.orientation.z,
+                gantry_arm_ee_link.orientation.w);
+            
+            // move the arm above the agv
+            // gripper stays at the current z
+            // only modify its x and y based on the part to grasp
+            // In this case we do not need to use preset locations
+            // everything is done dynamically
+            gantry_arm_ee_link.position.x = target_pose_in_world.position.x;
+            gantry_arm_ee_link.position.y = target_pose_in_world.position.y;
+            // move the arm
+            gantry_arm_group_.setMaxVelocityScalingFactor(1.0);
+            gantry_arm_group_.setPoseTarget(gantry_arm_ee_link);
+            gantry_arm_group_.move();
+
+            // orientation of the part in the bin, in world frame
+            tf2::Quaternion q_init_part(
+                part_init_pose.orientation.x,
+                part_init_pose.orientation.y,
+                part_init_pose.orientation.z,
+                part_init_pose.orientation.w);
+            // orientation of the part in the tray, in world frame
+            tf2::Quaternion q_target_part(
+                target_pose_in_world.orientation.x,
+                target_pose_in_world.orientation.y,
+                target_pose_in_world.orientation.z,
+                target_pose_in_world.orientation.w);
+
+            // relative rotation between init and target
+            tf2::Quaternion q_rot = q_target_part * q_init_part.inverse();
+            // apply this rotation to the current gripper rotation
+            tf2::Quaternion q_rslt = q_rot * q_current;
+            q_rslt.normalize();
+
+            // orientation of the gripper when placing the part in the tray
+            target_pose_in_world.orientation.x = q_rslt.x();
+            target_pose_in_world.orientation.y = q_rslt.y();
+            target_pose_in_world.orientation.z = q_rslt.z();
+            target_pose_in_world.orientation.w = q_rslt.w();
+            target_pose_in_world.position.z += 0.15;
+
+            gantry_arm_group_.setMaxVelocityScalingFactor(0.3);
+            gantry_arm_group_.setPoseTarget(target_pose_in_world);
+            moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+        // check a plan is found first then execute the action
+            // bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+            // if (success1)
+                gantry_arm_group_.move();
+                ros::Duration(2).sleep();
+                deactivateGripper();
+            // gantry_arm_group_.move();
+            // ros::Duration(2.0).sleep();
+            
+            
+            gantry_arm_group_.setMaxVelocityScalingFactor(1.0);
+            // gantryArmPreset();
+            // goToPresetLocation(agv);
+
+        return true;
+    }
+
+
+
+
+
+
     bool Gantry::placePart(geometry_msgs::Pose part_init_pose, geometry_msgs::Pose part_pose_in_frame,std::string part_type, std::string agv,bool flip_)
     {
             // gantryArmPreset();       
@@ -448,9 +550,10 @@ Gantry::Gantry() :
             gantry_arm_group_.setPoseTarget(target_pose_in_world);
             moveit::planning_interface::MoveGroupInterface::Plan my_plan;
         // check a plan is found first then execute the action
-            bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-            if (success1)
-                gantry_arm_group_.move();
+            // bool success1 = (gantry_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+            // if (success1)
+            gantry_arm_group_.move();
+                ros::Duration(2).sleep();
                 deactivateGripper();
             // gantry_arm_group_.move();
             // ros::Duration(2.0).sleep();
