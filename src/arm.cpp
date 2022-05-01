@@ -83,6 +83,14 @@ Arm::Arm() :
     agv3_.name = "agv3";
     agv4_.arm_preset = { -4.33, -M_PI, -1.25, 1.74, -2.04, -1.57, 0 };
     agv4_.name = "agv4";
+    bin1_e.arm_preset = { 3.379, -M_PI, -0.75, 2.01, -2.76, -1.57, 0 };
+    bin1_e.name = "bin1_e";
+    bin2_e.arm_preset = { 2.565, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
+        bin2_e.name = "bin2_e";
+    bin5_e.arm_preset = { -2.565, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
+        bin5_e.name = "bin5_e";
+    bin6_e.arm_preset = { -3.379, -M_PI,  -0.75, 2.01, -2.76, -1.57, 0 };
+        bin6_e.name = "bin6_e";
     // raw pointers are frequently used to refer to the planning group for improved performance.
     // to start, we will create a pointer that references the current robot’s state.
     const moveit::core::JointModelGroup* joint_model_group =
@@ -278,7 +286,6 @@ bool Arm::pickPart(std::string part_type, geometry_msgs::Pose part_init_pose, in
 
 
 
-
 bool Arm::conveyorPickPart(geometry_msgs::Pose part_pose){
     arm_group_.setMaxVelocityScalingFactor(1.0);
     goToPresetLocation("home3",1,part_pose.position.y);
@@ -290,16 +297,18 @@ bool Arm::conveyorPickPart(geometry_msgs::Pose part_pose){
     arm_ee_link_pose.orientation.w = flat_orientation.getW();
     geometry_msgs::Pose postgrasp_pose = part_pose;
     postgrasp_pose.orientation = arm_ee_link_pose.orientation;
-    postgrasp_pose.position.z = arm_ee_link_pose.position.z + 0.5;
+    postgrasp_pose.position.z = arm_ee_link_pose.position.z;
     std::vector<geometry_msgs::Pose> waypoints;
 
     auto pregrasp_pose = postgrasp_pose;
     pregrasp_pose.orientation = arm_ee_link_pose.orientation;
-    pregrasp_pose.position.z = part_pose.position.z + 0.08;
+    pregrasp_pose.position.z = part_pose.position.z + 0.06;
 
     auto grasp_pose = part_pose;
     grasp_pose.orientation = arm_ee_link_pose.orientation;
-    grasp_pose.position.z = part_pose.position.z + 0.002;
+    grasp_pose.position.x = part_pose.position.x - 0.01;
+    // grasp_pose.position.z = part_pose.position.z + 0.011;
+    grasp_pose.position.z = part_pose.position.z + 0.0115;
     
     waypoints.push_back(pregrasp_pose);
     waypoints.push_back(grasp_pose);
@@ -323,16 +332,22 @@ bool Arm::conveyorPickPart(geometry_msgs::Pose part_pose){
     while (!gripper_state_.attached)
     {
         grasp_pose.position.z -= 0.001;
+        grasp_pose.position.y -= 0.01;
         arm_group_.setPoseTarget(grasp_pose);
         arm_group_.move();
         ros::Duration(sleep(0.5));
     }
-    arm_group_.setMaxVelocityScalingFactor(1.0);
-    arm_group_.setMaxAccelerationScalingFactor(1.0);
+    ROS_INFO_STREAM("[Gripper] = object attached");
+    arm_group_.setMaxVelocityScalingFactor(0.8);
+    arm_group_.setMaxAccelerationScalingFactor(0.8);
     arm_group_.setPoseTarget(postgrasp_pose);
     arm_group_.move();
+    ros::Duration(1.0).sleep();
+    ROS_INFO_STREAM("go to home");
 
     goToPresetLocation("home1",1,part_pose.position.y);
+    ros::Duration(1.0).sleep();
+    goToPresetLocation("home2",1,part_pose.position.y);
     ros::Duration(1.0).sleep();
     ROS_INFO_STREAM("[Gripper] = object attached");
     // goToPresetLocation("home1");
@@ -477,6 +492,9 @@ void Arm::goToPresetLocation(std::string location_name,int condition ,double y)
         else if (location_name.compare("home4") == 0) {
             location = home3_;
         }
+        else if (location_name.compare("home2") == 0) {
+            location = home2_;
+        }
         joint_group_positions_.at(0) = y;
         joint_group_positions_.at(1) = location.arm_preset.at(1);
         joint_group_positions_.at(2) = location.arm_preset.at(2);
@@ -526,6 +544,19 @@ void Arm::goToPresetLocation(std::string location_name,int condition ,double y)
                 else if (location_name.compare("bin6") == 0) {
             location = bin6_;
         }
+          else if (location_name.compare("bin1_e") == 0) {
+            location = bin1_e;
+        }
+          else if (location_name.compare("bin2_e") == 0) {
+            location = bin2_e;
+        }
+    
+        else if (location_name.compare("bin5_e") == 0) {
+            location = bin5_e;
+        }
+                else if (location_name.compare("bin6_e") == 0) {
+            location = bin6_e;
+        }
     joint_group_positions_.at(0) = location.arm_preset.at(0);
     joint_group_positions_.at(1) = location.arm_preset.at(1);
     joint_group_positions_.at(2) = location.arm_preset.at(2);
@@ -543,6 +574,7 @@ void Arm::goToPresetLocation(std::string location_name,int condition ,double y)
         arm_group_.move();
     }
 }
+
 
 geometry_msgs::Pose Arm::transform_to_world_frame(const geometry_msgs::Pose& target, const std::string& agv_id)
 {

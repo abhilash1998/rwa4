@@ -873,7 +873,7 @@ namespace {
     }
 }
 
-    bool check_for_part_on_conveyor(ros::ServiceClient * client,Arm * arm ){
+    bool check_for_part_on_conveyor(ros::ServiceClient * client,Arm * arm, AgilityChallenger* const agility){
         geometry_msgs::Pose part_pose,conveyor_pose,pickup_pose;
         group3_rwa4::GetConveyorBeltPartPickPose srv;
         std::string agv="agv1" , part_type="asd";
@@ -882,7 +882,33 @@ namespace {
         if (client->call(srv)){
             part_pose = srv.response.pick_pose;
             // ROS_INFO_STREAM("Part at: " << part_pose );
-            
+            auto ebins = agility->get_empty_bins();
+            int i;
+            for (i=0; i<4; i++)
+            {
+                if (ebins[i]==0)
+                    break;
+            }
+            std::string free_bin;
+            if(i == 0)
+            {
+                free_bin = "bin1_e";
+            }
+            else if(i == 1)
+            {
+                free_bin = "bin5_e";
+            }
+            else if(i == 2)
+            {
+                free_bin = "bin2_e";
+            }
+            else if(i == 3)
+            {
+                free_bin = "bin6_e";
+            }
+            // free_bin="bin5";
+
+            ROS_INFO_STREAM(free_bin);
             geometry_msgs::Pose goal_in_tray;
             goal_in_tray.position.x= 0.1;
             goal_in_tray.position.y= 0.1;
@@ -903,8 +929,9 @@ namespace {
                     pickup_pose.position.y = part_pose.position.y - 0.28;
                     pickup_pose.position.z = part_pose.position.z;
                     if (arm->conveyorPickPart(pickup_pose)) {
+                        ros::Duration(0.5).sleep();
                         // arm->placeConveyorPart("bin1");
-                        arm->placePart(pickup_pose,goal_in_tray,"bin1",flip_);
+                        arm->placePart(pickup_pose,goal_in_tray,free_bin,flip_);
                         return true;
                         }
                     }
@@ -923,15 +950,15 @@ namespace {
 
 
 
-void pick_part_conveyor(Arm * arm, ros::ServiceClient * Conveyor_client ){
-      if(!check_for_part_on_conveyor(Conveyor_client,arm)){
+
+void pick_part_conveyor(Arm * arm, ros::ServiceClient * Conveyor_client, AgilityChallenger* const agility){
+      if(!check_for_part_on_conveyor(Conveyor_client,arm,agility)){
             // ros::Duration(2.0).sleep();
-             pick_part_conveyor(arm,Conveyor_client);
+             pick_part_conveyor(arm,Conveyor_client,agility);
              
         // }
     }
 }
-
 
 int main(int argc, char **argv)
 {
@@ -1028,9 +1055,10 @@ int main(int argc, char **argv)
 
     int current_order_priority;
     nist_gear::Order current_order;
-    ros::Duration rate(0.1);
+    // ros::Duration rate(0.1);
+  ros::Duration rate(0.1);
         // ros::Duration(10).sleep();
-    // pick_part_conveyor( &arm,  &Conveyor_client );
+    pick_part_conveyor( &arm,  &Conveyor_client, &agility);
     while (ros::ok())
     {
         current_order_priority = agility.consume_pending_order(current_order);

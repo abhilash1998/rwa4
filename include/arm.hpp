@@ -74,6 +74,7 @@ public:
     start home1_, home2_,home3_,home4_;
     agv agv1_, agv2_, agv3_, agv4_;
     bin bin1_, bin2_,bin5_, bin6_;
+    bin bin1_e, bin2_e,bin5_e, bin6_e;
 
 private:
     std::vector<double> joint_group_positions_;

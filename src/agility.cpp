@@ -36,9 +36,19 @@ void AgilityChallenger::help_logical_camera_image_callback(const nist_gear::Logi
     // Notice the vector is a reference
     std::vector<std::string>& current_parts_bin_idx = current_detected_parts[bin_idx];
     current_parts_bin_idx.clear();
+    empty_bins[bin_idx] = bin_idx+1;
+    bool empty = true;
     for (auto iter_model = msg->models.begin(); iter_model != msg->models.end(); ++iter_model)
     {
         current_parts_bin_idx.push_back(iter_model->type);
+        if(iter_model->pose.position.z < 0)
+        {
+            empty = false;
+        }
+    }
+    if (!empty)
+    {
+        empty_bins[bin_idx] = 0;
     }
 }
 
@@ -49,6 +59,7 @@ void AgilityChallenger::help_logical_camera_as_callback(const nist_gear::Logical
     // Notice the vector is a reference
     std::vector<std::string>& current_parts_bin_idx = current_detected_parts_as1[bin_idx];
     current_parts_bin_idx.clear();
+    
     for (auto iter_model = msg->models.begin(); iter_model != msg->models.end(); ++iter_model)
     {
         current_parts_bin_idx.push_back(iter_model->type);
@@ -421,6 +432,11 @@ std::vector<int> AgilityChallenger::get_as1_indices_of(const std::string& produc
         }
     }
     return indices;
+}
+
+std::array<int, 4>  AgilityChallenger::get_empty_bins()
+{
+    return empty_bins;
 }
 
 std::string AgilityChallenger::get_logical_camera_contents() const
